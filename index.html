@@ -1,0 +1,55 @@
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>計測Data 簡易グラフ化サイト</title>
+    <script src = "chart.js"></script>     
+    <script src = "script.js"></script>
+
+</head>
+<body>
+<h1>CSVData 簡易グラフ化サイト</h1>
+<!-- inputタグでCSVファイルを選択 -->
+<input type="file" id="fileInput" accept=".csv" />
+
+<div style="position:relative;width:500px;height:500px;">
+  <canvas id="chart1"></canvas>
+  <canvas id="chart2"></canvas>
+  <canvas id="chart3"></canvas>
+  <canvas id="chart4"></canvas>
+</div>
+
+<script>
+// inputタグの要素を取得
+const fileInput = document.getElementById("fileInput");
+let graphdata = 0;
+const timedata = []; const swadata = []; const swtdata = []; const yrdata = [];
+const xdata = []; const ydata = [];  
+
+// ファイルが選択されたら、読み込む
+fileInput.addEventListener("change", function (event) {
+  const file = event.target.files[0];
+  readFile(file);
+});
+
+// FileReader APIを使ってファイルを読み込む関数
+function readFile(file) {
+  const reader = new FileReader();
+  // 読み込みが完了したら、CSVデータを処理してグラフを描画
+  reader.onload = function (event) {
+    const csvData = event.target.result;
+    processGraphData(processData(csvData));
+
+    // データでグラフを書く
+    processGraph("chart1","case1",timedata,swadata);
+    processGraph("chart2","case1",timedata,swtdata);
+    processGraph("chart3","case1",timedata,yrdata);
+    processGraph("chart4","case1",xdata,ydata);
+  };
+  // ファイルをテキストとして読み込む
+  reader.readAsText(file);
+}
+
+</script>
+
+</body>
+</html>
