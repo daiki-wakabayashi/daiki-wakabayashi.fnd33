@@ -33,9 +33,9 @@ function processGraphDataCreate(graphData) {
     swadata.push(tempArray2);
     swtdata.push(tempArray3);
     yrdata.push(tempArray4);
-    sadata.push(tempArray4);
-    radata.push(tempArray5);
-    pidata.push(tempArray6);
+    sadata.push(tempArray5);
+    radata.push(tempArray6);
+    pidata.push(tempArray7);
 }
 
 // グラフを描画するための関数
