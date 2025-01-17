@@ -9,11 +9,13 @@
 
 
 </head>
+
 <body>
+
 <h1>計測Data 簡易グラフ化サイト</h1>
 <!-- inputタグでCSVファイルを選択 -->
 <input type="file" id="fileInput" accept=".csv" multiple />
-
+<button class="CreateButton" id="CreateButton">グラフを作成</button>
 <button class="saveButton" id="saveButton">PDFをダウンロード</button>
 
 <div class="container" style="width:500px;height:300px;">
@@ -29,14 +31,57 @@
 </div>
 
 <script>
-const fileSave = document.getElementById("saveButton");
+// グラフ描画用の配列をこちらに設定
+const timedata = []; const swadata = [];
+const swtdata = []; const yrdata = []; const sadata = [];
+const radata = []; const pidata = [];  
+var dataList = [];
 
+const graphCreate = document.getElementById("CreateButton");
+const fileSave = document.getElementById("saveButton");
+const fileInput = document.getElementById("fileInput");
+
+
+// ファイルが選択されたら、読み込む
+fileInput.addEventListener("change", function (event) {
+  var results = event.target.files;         //複数ファイルのデータ
+  var end = event.target.files.length;      //ファイル数
+
+  //すべてのファイルを読み込んでGraphDataに追加
+  for(var i=0; i<end; i++) {
+    var reader = new FileReader();
+    reader.readAsText( results[i] ); 
+    reader.addEventListener('load', function(event) {
+      dataList.push(event.target.result);
+    })
+  }
+});
+
+// ボタンが押されたらグラフを作る
+graphCreate.addEventListener("click", () => {
+  const graphData = [];
+
+  for (var i = 0 ; i < dataList.length ; i++){
+    graphData.push(processData(dataList[i]));
+    processGraphDataCreate(graphData[i]);
+  }
+
+  // データでグラフを書く
+  processGraph("chart1",timedata,swadata,"time [s]" ,"SWA [deg]");
+  processGraph("chart2",timedata,swtdata,"time [s]" ,"SWT [Nm]");
+  processGraph("chart3",timedata,yrdata,"time [s]" ,"Yaw Rate [deg/s]");
+  processGraph("chart4",timedata,sadata,"time [s]" ,"Slip Angle [deg]");
+  processGraph("chart5",timedata,radata,"time [s]" ,"Roll Angle [deg]");
+  processGraph("chart6",timedata,pidata,"time [s]" ,"Pitch Angle [deg]");
+})
+
+// ここから保存処理
 fileSave.addEventListener("click" , () => {
 
   const element = document.body; // 対象要素を指定
   const option = {
     margin: 0, // 余白
-    filename: 'fileName.pdf', // ファイル名
+    filename: 'ResultReport.pdf', // ファイル名
     image: { type: 'png', quality: 1 }, // PDFの生成に使用される画像のタイプとクオリティ
     html2canvas: { scale: 2, useCORS: true }, // html2canvasで使用される設定を記述。
     jsPDF: { format: 'a2', orientation: 'portrait' }, // jsPDFで使用される設定を記述
@@ -46,44 +91,7 @@ fileSave.addEventListener("click" , () => {
     .from(element)
     .set(option)
     .save()
-    .then(() => {
-        // 成功
-    })
-    .catch((e) => {
-        // 失敗
-    });
   })
-
-// inputタグの要素を取得
-const fileInput = document.getElementById("fileInput");
-const timedata = []; const swadata = []; const swtdata = []; const yrdata = [];
-const xdata = []; const ydata = [];  
-
-// ファイルが選択されたら、読み込む
-fileInput.addEventListener("change", function (event) {
-  const file = event.target.files[0];
-  readFile(file);
-});
-
-// FileReader APIを使ってファイルを読み込む関数
-function readFile(file) {
-  const reader = new FileReader();
-  // 読み込みが完了したら、CSVデータを処理してグラフを描画
-  reader.onload = function (event) {
-    const csvData = event.target.result;
-    processGraphDataCreate(processData(csvData));
-
-    // データでグラフを書く
-    processGraph("chart1","case1",timedata,swadata,"time [s]" ,"SWA [deg]");
-    processGraph("chart2","case1",timedata,swtdata,"time [s]" ,"SWT [Nm]");
-    processGraph("chart3","case1",timedata,yrdata,"time [s]" ,"Yaw Rate [deg/s]");
-    processGraph("chart4","case1",xdata,ydata,"X disp [m]" ,"Y disp [m]");
-    processGraph("chart5","case1",xdata,ydata,"X disp [m]" ,"Y disp [m]");
-    processGraph("chart6","case1",xdata,ydata,"X disp [m]" ,"Y disp [m]");
-  };
-  // ファイルをテキストとして読み込む
-  reader.readAsText(file);
-}
 
 </script>
 
