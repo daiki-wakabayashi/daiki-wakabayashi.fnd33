@@ -13,22 +13,36 @@ function processData(csvData) {
 
 // 読み込んだCSVデータをグラフ用に処理する関数
 function processGraphDataCreate(graphData) {
+    const tempArray1 = []; const tempArray2 = [];
+    const tempArray3 = []; const tempArray4 = [];    
+    const tempArray5 = []; const tempArray6 = [];
+    const tempArray7 = [];
+
     // データをforループさせて新しい配列に転置する
     for (var i = 1 ; i < graphData.length - 1 ; i++) {
-    timedata.push(graphData[i][0]);
-    swadata.push(graphData[i][1]);
-    swtdata.push(graphData[i][2]);
-    yrdata.push(graphData[i][3]);
-    xdata.push(graphData[i][5]);
-    ydata.push(graphData[i][6]);
-    }
+        tempArray1.push(graphData[i][0]);
+        tempArray2.push(graphData[i][1]);
+        tempArray3.push(graphData[i][2]);
+        tempArray4.push(graphData[i][3]);
+        tempArray5.push(graphData[i][4]);
+        tempArray6.push(graphData[i][5]);
+        tempArray7.push(graphData[i][6]);
+    }   
+
+    timedata.push(tempArray1);
+    swadata.push(tempArray2);
+    swtdata.push(tempArray3);
+    yrdata.push(tempArray4);
+    sadata.push(tempArray4);
+    radata.push(tempArray5);
+    pidata.push(tempArray6);
 }
 
 // グラフを描画するための関数
-function processGraph(canId,labelname,labeldata,graphdata,xlabel,ylabel) {
+function processGraph(canId,labeldata,graphdata,xlabel,ylabel) {
     var ctx = document.getElementById(canId);  
 
-    const plotObject = processObjectCreate(labelname,labeldata,graphdata);
+    const plotObject = processObjectCreate(labeldata,graphdata);
 
     var myGraph = new Chart(ctx,{
     type: 'line',
@@ -55,14 +69,29 @@ function processGraph(canId,labelname,labeldata,graphdata,xlabel,ylabel) {
     }); 
 }
 
-function processObjectCreate(labelname,labeldata,graphdata) {
-    const result = {
-        labels: labeldata,
-        datasets: [{
-        label: labelname,
-        data: graphdata.map(Number),
-        borderColor: 'rgba(60, 190, 20, 0.8)'
-        }],
-    };
+function processObjectCreate(labeldata,graphdata) {
+    const colormap = ["red","blue","green","olive","purple","black"];
+    let labelname = "";
+    const dataset = [];
+    const result = {};
+
+    result.labels = labeldata[0];
+
+    for (var i = 0; i < labeldata.length ; i++) {
+        labelname = `Data${i+1}`;
+        createDataset(dataset,labelname,graphdata[i],colormap[i]);
+    }
+
+    result.datasets = dataset;
     return result;
+}
+
+function createDataset(dataset,labelname,graphData,color) {
+    const tempdataset = {};
+
+    tempdataset.label = labelname
+    tempdataset.data = graphData.map(Number);
+    tempdataset.borderColor = color;
+
+    dataset.push(tempdataset);
 }
